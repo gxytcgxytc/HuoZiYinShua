@@ -9,8 +9,6 @@ import sounddevice as sd
 from pypinyin import lazy_pinyin
 import json
 from pathlib import Path
-import os
-
 
 
 #--------------------------------------------
@@ -109,7 +107,6 @@ class huoZiYinShua:
 			self.__ysddTable = json.load(ysddTableFile)							#原声大碟文本与文件名对照表
 			self.__outputDevice = configuration["outputDevice"]							#原声大碟文本与文件名对照表
 			sd.default.device = int(self.__outputDevice)
-			
 			#统一为小写
 			dictItems = list(self.__ysddTable.items())
 			#转换为list是为了切断dictItems与self.__ysddTable的联系，否则报错dictionary changed size during iteration
@@ -149,8 +146,8 @@ class huoZiYinShua:
 					inYsddMode=False, pitchMult=1, speedMult=1, norm=False, reverse=False):
 		self.__concatenate(rawData, inYsddMode, pitchMult, speedMult, norm, reverse)
 		self.__export(tempPath)
-		# playsound(tempPath)
 		sd.play(self.__concatenated)
+		sd.wait()
 		
 	
 	
@@ -248,7 +245,9 @@ class huoZiYinShua:
 					self.__concatenated = np.concatenate((self.__concatenated,
 														np.zeros(int(_targetSR/4))))
 
-
+		#添加少量空白音频 sounddevice问题..
+		self.__concatenated = np.concatenate((self.__concatenated,
+														np.zeros(int(_targetSR/4))))
 		#音高偏移
 		self.__concatenated = _modifyPitchAndSpeed(self.__concatenated, pitchMult, speedMult)
 		
@@ -259,7 +258,7 @@ class huoZiYinShua:
 		#如果缺失拼音，则发出警告
 		if len(missingPinyin) != 0:
 			print("警告：缺失或未定义{}".format(missingPinyin))
-
+	
 
 	
 	#导出wav文件
