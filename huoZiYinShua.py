@@ -5,11 +5,11 @@
 import soundfile as sf
 import psola
 import numpy as np
-from playsound import playsound
+import sounddevice as sd
 from pypinyin import lazy_pinyin
 import json
 from pathlib import Path
-
+import os
 
 
 
@@ -107,7 +107,9 @@ class huoZiYinShua:
 			self.__ysddPath = configuration["ysddSourceDirectory"]				#原声大碟音频文件存放目录
 			self.__dictionary = json.load(dictFile)								#定义非中文字符读法的词典
 			self.__ysddTable = json.load(ysddTableFile)							#原声大碟文本与文件名对照表
-
+			self.__outputDevice = configuration["outputDevice"]							#原声大碟文本与文件名对照表
+			sd.default.device = int(self.__outputDevice)
+			
 			#统一为小写
 			dictItems = list(self.__ysddTable.items())
 			#转换为list是为了切断dictItems与self.__ysddTable的联系，否则报错dictionary changed size during iteration
@@ -132,7 +134,6 @@ class huoZiYinShua:
 		return self.__configSucceed
 		
 
-
 	
 	#直接导出
 	def export(self, rawData, filePath="./Output.wav", inYsddMode=False,
@@ -148,7 +149,9 @@ class huoZiYinShua:
 					inYsddMode=False, pitchMult=1, speedMult=1, norm=False, reverse=False):
 		self.__concatenate(rawData, inYsddMode, pitchMult, speedMult, norm, reverse)
 		self.__export(tempPath)
-		playsound(tempPath)
+		# playsound(tempPath)
+		sd.play(self.__concatenated)
+		
 	
 	
 	

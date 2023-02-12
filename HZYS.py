@@ -12,7 +12,7 @@ if __name__ == "__main__":
 	parser.add_argument("-s", "--speedMult", help="播放速度，大于1加速，小于1减速，建议[0.5, 2]", default=1)
 	parser.add_argument("-r", "--reverse", help="频音的成生放倒", default=False, action="store_true")
 	parser.add_argument("-n", "--norm", help="统一所有字音量", default=False, action="store_true")
-
+	parser.add_argument("-v", "--voiceDevice", help="输出的设备", default=False)
 
 	#新建活字印刷类实例
 	HZYS = huoZiYinShua("./settings.json")
